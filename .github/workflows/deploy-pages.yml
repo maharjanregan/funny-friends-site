@@ -40,15 +40,17 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Generate runtime config (public/config.js)
+        shell: bash
         run: |
-          cat > public/config.js << 'EOF'
-          // Generated at deploy time by GitHub Actions
-          window.__FF_CONFIG__ = {
-            supabaseUrl: "${NEXT_PUBLIC_SUPABASE_URL}",
-            supabaseKey: "${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY}",
-            buildSha: "${NEXT_PUBLIC_BUILD_SHA}",
-          };
-          EOF
+          mkdir -p public
+          {
+            echo "// Generated at deploy time by GitHub Actions";
+            echo "window.__FF_CONFIG__ = {";
+            echo "  supabaseUrl: \"$NEXT_PUBLIC_SUPABASE_URL\",";
+            echo "  supabaseKey: \"$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY\",";
+            echo "  buildSha: \"$NEXT_PUBLIC_BUILD_SHA\",";
+            echo "};";
+          } > public/config.js
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY }}
