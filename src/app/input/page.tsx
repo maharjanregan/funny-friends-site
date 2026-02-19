@@ -258,21 +258,7 @@ export default function InputPage() {
             </section>
           ) : null}
 
-          <section className="rounded-3xl border border-zinc-200 bg-white p-6 text-sm text-zinc-700 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
-            <p className="font-medium">How this works (v1)</p>
-            <ul className="mt-2 list-disc space-y-1 pl-5">
-              <li>
-                The PIN prevents friends from submitting as each other (basic check).
-              </li>
-              <li>
-                Submissions still need to be added to the repo to show up publicly.
-              </li>
-              <li>
-                Later, we can wire this to a real backend (Google Sheet / Supabase)
-                for automatic publishing.
-              </li>
-            </ul>
-          </section>
+          {/* Info section removed for demo cleanliness */}
         </div>
       </main>
     </div>
