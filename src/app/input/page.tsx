@@ -9,6 +9,10 @@ function isValidPin(friend: FriendName, pin: string) {
   return pin.trim() === friendPins[friend];
 }
 
+async function copyToClipboard(text: string) {
+  await navigator.clipboard.writeText(text);
+}
+
 export default function InputPage() {
   const friends = useMemo(() => Object.keys(friendPins) as FriendName[], []);
   const [friend, setFriend] = useState<FriendName>(friends[0]);
@@ -16,6 +20,7 @@ export default function InputPage() {
   const [quote, setQuote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const payload = useMemo(() => {
     const now = new Date();
@@ -26,12 +31,20 @@ export default function InputPage() {
     };
   }, [friend, quote]);
 
-  function onSubmit(e: React.FormEvent) {
+  const payloadText = useMemo(() => JSON.stringify(payload, null, 2), [payload]);
+
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setCopied(false);
 
     if (!quote.trim()) {
       setError("Add a quote first.");
+      return;
+    }
+
+    if (pin.trim().length !== 4) {
+      setError("PIN must be 4 digits.");
       return;
     }
 
@@ -41,6 +54,14 @@ export default function InputPage() {
     }
 
     setSubmitted(true);
+
+    // Nice demo behavior: copy JSON automatically on success.
+    try {
+      await copyToClipboard(payloadText);
+      setCopied(true);
+    } catch {
+      // Ignore clipboard failures (some browsers block it).
+    }
   }
 
   return (
@@ -98,10 +119,15 @@ export default function InputPage() {
                 </span>
                 <input
                   value={pin}
-                  onChange={(e) => setPin(e.target.value)}
+                  onChange={(e) => {
+                    // keep only digits
+                    const next = e.target.value.replace(/\D/g, "").slice(0, 4);
+                    setPin(next);
+                  }}
+                  type="password"
                   inputMode="numeric"
                   maxLength={4}
-                  placeholder="####"
+                  placeholder="••••"
                   className="h-11 rounded-xl border border-zinc-200 bg-white px-3 text-sm shadow-sm outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-black/40"
                 />
               </label>
@@ -129,7 +155,8 @@ export default function InputPage() {
             <div className="mt-5 flex flex-wrap items-center gap-3">
               <button
                 type="submit"
-                className="inline-flex h-11 items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                disabled={!quote.trim() || pin.trim().length !== 4}
               >
                 Submit
               </button>
@@ -144,18 +171,37 @@ export default function InputPage() {
 
           {submitted ? (
             <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-emerald-900 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-100">
-              <h2 className="text-lg font-semibold">Saved (locally)</h2>
+              <h2 className="text-lg font-semibold">Submitted</h2>
               <p className="mt-2 text-sm opacity-90">
-                Because this site is hosted on GitHub Pages (static), this doesn’t
-                automatically update the shared site for everyone.
+                Demo mode: this site is hosted on GitHub Pages (static), so it can’t
+                auto-publish to the shared site without a backend.
               </p>
               <p className="mt-2 text-sm opacity-90">
-                Copy the JSON below and send it to Regan — then we’ll add it to the
-                repo and it’ll appear on the site.
+                We copied your submission JSON {copied ? "to clipboard" : "below"}. Send it
+                to Regan to publish.
               </p>
 
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await copyToClipboard(payloadText);
+                    setCopied(true);
+                  }}
+                  className="inline-flex h-10 items-center justify-center rounded-full bg-emerald-700 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
+                >
+                  {copied ? "Copied" : "Copy JSON"}
+                </button>
+                <a
+                  href="/quote-board"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-emerald-300 bg-white/70 px-5 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow"
+                >
+                  Go to quote board
+                </a>
+              </div>
+
               <pre className="mt-4 overflow-auto rounded-2xl border border-emerald-200/80 bg-white/60 p-4 text-xs text-zinc-900 dark:border-emerald-900/40 dark:bg-black/30 dark:text-zinc-100">
-{JSON.stringify(payload, null, 2)}
+{payloadText}
               </pre>
             </section>
           ) : null}

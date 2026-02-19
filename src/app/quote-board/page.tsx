@@ -15,9 +15,14 @@ export default function QuoteBoardPage() {
           <a href="/" className="font-semibold tracking-tight">
             funny-friends
           </a>
-          <a className="text-sm hover:underline" href="/quote-board">
-            Quote board
-          </a>
+          <div className="flex items-center gap-6 text-sm">
+            <a className="hover:underline" href="/quote-board">
+              Quote board
+            </a>
+            <a className="hover:underline" href="/input">
+              Input
+            </a>
+          </div>
         </nav>
       </header>
 
