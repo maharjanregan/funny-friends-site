@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Nav } from "@/components/Nav";
 import friendPins from "@/data/friendPins.json";
 import { todayKey } from "@/lib/dailyKey";
 import { buildSha, getSupabase, isSupabaseConfigured } from "@/lib/supabaseClient";
@@ -97,7 +98,7 @@ export default function InputPage() {
       setQuote("");
 
       setTimeout(() => {
-        router.push("quote");
+        router.push("/quote");
       }, 250);
     } finally {
       setSaving(false);
@@ -107,19 +108,7 @@ export default function InputPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white text-zinc-900 dark:from-black dark:to-zinc-950 dark:text-zinc-50">
       <header className="mx-auto max-w-4xl px-6 pt-10">
-        <nav className="flex items-center justify-between">
-          <a href="quote" className="font-semibold tracking-tight">
-            funny-friends
-          </a>
-          <div className="flex items-center gap-6 text-sm">
-            <a className="hover:underline" href="quote">
-              Quote board
-            </a>
-            <a className="hover:underline" href="input">
-              Input
-            </a>
-          </div>
-        </nav>
+        <Nav />
       </header>
 
       <main className="mx-auto max-w-4xl px-6 pb-20 pt-12">
@@ -214,7 +203,7 @@ export default function InputPage() {
                 {saving ? "Saving…" : "Submit"}
               </button>
               <a
-                href="quote"
+                href="/quote"
                 className="inline-flex h-11 items-center justify-center rounded-full border border-zinc-200 bg-white px-6 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-zinc-800 dark:bg-zinc-950"
               >
                 View quote board
@@ -245,7 +234,7 @@ export default function InputPage() {
                   {copied ? "Copied" : "Copy JSON"}
                 </button>
                 <a
-                  href="quote"
+                  href="/quote"
                   className="inline-flex h-10 items-center justify-center rounded-full border border-emerald-300 bg-white/70 px-5 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow"
                 >
                   Go to quote board

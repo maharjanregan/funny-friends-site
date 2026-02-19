@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { Nav } from "@/components/Nav";
+
 import quotesData from "@/data/quotes.json";
 import { todayKey as clientTodayKey, pickDailyTop3, type Quote } from "@/lib/quoteBoard";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabaseClient";
@@ -75,19 +77,7 @@ export default function QuoteBoardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white text-zinc-900 dark:from-black dark:to-zinc-950 dark:text-zinc-50">
       <header className="mx-auto max-w-4xl px-6 pt-10">
-        <nav className="flex items-center justify-between">
-          <a href="quote" className="font-semibold tracking-tight">
-            funny-friends
-          </a>
-          <div className="flex items-center gap-6 text-sm">
-            <a className="hover:underline" href="quote">
-              Quote board
-            </a>
-            <a className="hover:underline" href="input">
-              Input
-            </a>
-          </div>
-        </nav>
+        <Nav />
       </header>
 
       <main className="mx-auto max-w-4xl px-6 pb-20 pt-12">
