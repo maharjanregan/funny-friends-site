@@ -70,5 +70,12 @@
     "text": "We’re not lost, we’re just exploring alternate routes.",
     "saidBy": "Regan",
     "tags": ["travel", "cope"]
+  },
+  {
+    "id": "q13",
+    "text": "If we ship it today, it’s a win. If we ship it tomorrow, it’s still a win — just a different timezone.",
+    "saidBy": "Regan",
+    "tags": ["shipping", "time"]
   }
 ]
+
