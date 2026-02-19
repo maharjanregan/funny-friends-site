@@ -39,12 +39,24 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
-      - name: Build (static export)
-        run: npm run build
+      - name: Generate runtime config (public/config.js)
+        run: |
+          cat > public/config.js << 'EOF'
+          // Generated at deploy time by GitHub Actions
+          window.__FF_CONFIG__ = {
+            supabaseUrl: "${NEXT_PUBLIC_SUPABASE_URL}",
+            supabaseKey: "${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY}",
+            buildSha: "${NEXT_PUBLIC_BUILD_SHA}",
+          };
+          EOF
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_BUILD_SHA: ${{ github.sha }}
+
+      - name: Build (static export)
+        run: npm run build
+        env:
           NEXT_PUBLIC_BUILD_SHA: ${{ github.sha }}
 
       - name: Upload Pages artifact

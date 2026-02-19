@@ -27,6 +27,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* Runtime config (generated at deploy time). Keep relative for GitHub Pages basePath. */}
+        <script src="config.js" />
         {children}
       </body>
     </html>
