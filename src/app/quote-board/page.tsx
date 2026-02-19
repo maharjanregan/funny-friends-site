@@ -54,9 +54,11 @@ export default function QuoteBoardPage() {
     }
 
     void load();
+    const t = setInterval(load, 3000);
 
     return () => {
       cancelled = true;
+      clearInterval(t);
     };
   }, []);
 
@@ -97,6 +99,7 @@ export default function QuoteBoardPage() {
             <p className="mt-2 text-zinc-600 dark:text-zinc-300">
               Today’s top 3{mode === "supabase" ? " (live)" : " (random fallback)"}
               {loading ? " — loading…" : ""}
+              <span className="ml-2 text-xs opacity-75">(auto-refresh)</span>
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

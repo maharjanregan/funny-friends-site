@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import friendPins from "@/data/friendPins.json";
 import { todayKey } from "@/lib/dailyKey";
 import { buildSha, getSupabase, isSupabaseConfigured } from "@/lib/supabaseClient";
@@ -16,6 +17,7 @@ async function copyToClipboard(text: string) {
 }
 
 export default function InputPage() {
+  const router = useRouter();
   const friends = useMemo(() => Object.keys(friendPins) as FriendName[], []);
   const [friend, setFriend] = useState<FriendName>(friends[0]);
   const [pin, setPin] = useState("");
@@ -82,13 +84,21 @@ export default function InputPage() {
 
       setSubmitted(true);
 
-      // Nice demo behavior: copy JSON automatically on success.
+      // Copy payload for debugging/demo.
       try {
         await copyToClipboard(payloadText);
         setCopied(true);
       } catch {
         // Ignore clipboard failures (some browsers block it).
       }
+
+      // Clear inputs + take them to the quote board (live page).
+      setPin("");
+      setQuote("");
+
+      setTimeout(() => {
+        router.push("quote");
+      }, 250);
     } finally {
       setSaving(false);
     }
@@ -216,11 +226,11 @@ export default function InputPage() {
             <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-emerald-900 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-100">
               <h2 className="text-lg font-semibold">Submitted</h2>
               <p className="mt-2 text-sm opacity-90">
-                Your quote was saved. It should show up on the quote board for
-                everyone within a moment.
+                Saved. Redirecting you to the quote board…
               </p>
               <p className="mt-2 text-sm opacity-90">
-                (We still show/copy the JSON payload for debugging/demo.)
+                If it doesn’t update instantly, refresh /quote — it auto-refreshes
+                every few seconds.
               </p>
 
               <div className="mt-4 flex flex-wrap items-center gap-3">
