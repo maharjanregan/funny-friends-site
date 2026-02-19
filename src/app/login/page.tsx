@@ -32,8 +32,9 @@ export default function LoginPage() {
       const { error: signInError } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
-          // Keep it relative for GitHub Pages; Supabase will resolve with Site URL.
-          emailRedirectTo: window.location.origin + "/funny-friends-site/quote",
+          // Always send users back to the public GitHub Pages URL (avoid localhost).
+          emailRedirectTo:
+            "https://maharjanregan.github.io/funny-friends-site/quote", 
         },
       });
 
