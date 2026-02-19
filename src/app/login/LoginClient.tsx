@@ -106,7 +106,7 @@ export function LoginClient() {
             >
               {loading ? "Logging in…" : "Login"}
             </button>
-            <a className="text-sm underline" href="/signup">
+            <a className="text-sm underline" href="/need-invite">
               Need an invite?
             </a>
           </div>
