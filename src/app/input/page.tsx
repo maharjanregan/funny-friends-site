@@ -2,10 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+
 import { Nav } from "@/components/Nav";
+import { ForgotPin } from "@/components/ForgotPin";
 import friendPins from "@/data/friendPins.json";
-// (dailyKey no longer used — realtime room)
-import { buildSha, getSupabase, isSupabaseConfigured } from "@/lib/supabaseClient";
+import { getSupabase } from "@/lib/supabaseClient";
 import type { MessageRow } from "@/types/message";
 
 type FriendName = keyof typeof friendPins;
@@ -14,39 +15,24 @@ function isValidPin(friend: FriendName, pin: string) {
   return pin.trim() === friendPins[friend];
 }
 
-async function copyToClipboard(text: string) {
-  await navigator.clipboard.writeText(text);
-}
-
 export default function InputPage() {
   const router = useRouter();
   const friends = useMemo(() => Object.keys(friendPins) as FriendName[], []);
+
   const [friend, setFriend] = useState<FriendName>(friends[0]);
   const [pin, setPin] = useState("");
-  const [quote, setQuote] = useState("");
+  const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
+
   const [error, setError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
-
-  const payload = useMemo(() => {
-    const now = new Date();
-    return {
-      friend,
-      quote: quote.trim(),
-      submittedAt: now.toISOString(),
-    };
-  }, [friend, quote]);
-
-  const payloadText = useMemo(() => JSON.stringify(payload, null, 2), [payload]);
+  const [submitted, setSubmitted] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setCopied(false);
 
-    if (!quote.trim() && !file) {
+    if (!text.trim() && !file) {
       setError("Add a rant or attach a meme.");
       return;
     }
@@ -57,20 +43,18 @@ export default function InputPage() {
     }
 
     if (!isValidPin(friend, pin)) {
-      setError("Wrong PIN for that friend.");
+      setError("Wrong code.");
+      return;
+    }
+
+    const supabase = getSupabase();
+    if (!supabase) {
+      setError("Supabase isn’t ready yet. Try refreshing.");
       return;
     }
 
     setSaving(true);
     try {
-      const supabase = getSupabase();
-      if (!supabase) {
-        setError(
-          "Supabase is not configured yet (missing NEXT_PUBLIC_SUPABASE_URL / key in the deployed build).",
-        );
-        return;
-      }
-
       let image_url: string | null = null;
 
       if (file) {
@@ -96,13 +80,11 @@ export default function InputPage() {
 
       const payload: Omit<MessageRow, "id" | "created_at"> = {
         friend,
-        text: quote.trim() ? quote.trim() : null,
+        text: text.trim() ? text.trim() : null,
         image_url,
       };
 
-      const { error: insertError } = await supabase
-        .from("messages")
-        .insert(payload);
+      const { error: insertError } = await supabase.from("messages").insert(payload);
 
       if (insertError) {
         setError(insertError.message);
@@ -110,23 +92,13 @@ export default function InputPage() {
       }
 
       setSubmitted(true);
-
-      // Copy payload for debugging/demo.
-      try {
-        await copyToClipboard(payloadText);
-        setCopied(true);
-      } catch {
-        // Ignore clipboard failures (some browsers block it).
-      }
-
-      // Clear inputs + take them to the room.
       setPin("");
-      setQuote("");
+      setText("");
       setFile(null);
 
       setTimeout(() => {
         router.push("/quote");
-      }, 250);
+      }, 300);
     } finally {
       setSaving(false);
     }
@@ -143,23 +115,14 @@ export default function InputPage() {
           Rant here
         </h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-300">
-          Pick your name, enter your 4-digit PIN, and rant.
+          Pick your name, enter your 4-digit code, and rant.
         </p>
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
           Buddies: Rahul · Dristant · Shreni · Regan
         </p>
+        <ForgotPin />
 
         <div className="mt-8 grid gap-6">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-            <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-              Supabase: {isSupabaseConfigured() ? "configured" : "missing env"}
-            </span>
-            {buildSha ? (
-              <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 font-mono shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-                build: {buildSha.slice(0, 7)}
-              </span>
-            ) : null}
-          </div>
           <form
             onSubmit={onSubmit}
             className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
@@ -184,12 +147,11 @@ export default function InputPage() {
 
               <label className="grid gap-2">
                 <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  4-digit PIN
+                  4-digit code
                 </span>
                 <input
                   value={pin}
                   onChange={(e) => {
-                    // keep only digits
                     const next = e.target.value.replace(/\D/g, "").slice(0, 4);
                     setPin(next);
                   }}
@@ -207,8 +169,8 @@ export default function InputPage() {
                 Rant
               </span>
               <textarea
-                value={quote}
-                onChange={(e) => setQuote(e.target.value)}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
                 rows={4}
                 placeholder="Type your rant…"
                 className="rounded-2xl border border-zinc-200 bg-white px-3 py-3 text-sm shadow-sm outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-black/40"
@@ -230,9 +192,6 @@ export default function InputPage() {
               </p>
             </label>
 
-            <label className="mt-4 grid gap-2">
-            </label>
-
             {error ? (
               <p className="mt-3 text-sm text-red-600 dark:text-red-400">
                 {error}
@@ -243,56 +202,35 @@ export default function InputPage() {
               <button
                 type="submit"
                 className="inline-flex h-11 items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-                disabled={saving || !quote.trim() || pin.trim().length !== 4}
+                disabled={saving || (!text.trim() && !file) || pin.trim().length !== 4}
               >
-                {saving ? "Saving…" : "Submit"}
+                {saving ? "Posting…" : "Post"}
               </button>
               <a
                 href="/quote"
                 className="inline-flex h-11 items-center justify-center rounded-full border border-zinc-200 bg-white px-6 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-zinc-800 dark:bg-zinc-950"
               >
-                View quote board →
+                View room →
               </a>
             </div>
           </form>
 
           {submitted ? (
             <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-emerald-900 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-100">
-              <h2 className="text-lg font-semibold">Submitted</h2>
+              <h2 className="text-lg font-semibold">Posted</h2>
               <p className="mt-2 text-sm opacity-90">
-                Saved. Redirecting you to the quote board…
+                Sending you to the room…
               </p>
-              <p className="mt-2 text-sm opacity-90">
-                If it doesn’t update instantly, refresh /quote — it auto-refreshes
-                every few seconds.
-              </p>
-
-              <div className="mt-4 flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await copyToClipboard(payloadText);
-                    setCopied(true);
-                  }}
-                  className="inline-flex h-10 items-center justify-center rounded-full bg-emerald-700 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
-                >
-                  {copied ? "Copied" : "Copy JSON"}
-                </button>
+              <div className="mt-4">
                 <a
                   href="/quote"
                   className="inline-flex h-10 items-center justify-center rounded-full border border-emerald-300 bg-white/70 px-5 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow"
                 >
-                  Go to quote board →
+                  Go to room →
                 </a>
               </div>
-
-              <pre className="mt-4 overflow-auto rounded-2xl border border-emerald-200/80 bg-white/60 p-4 text-xs text-zinc-900 dark:border-emerald-900/40 dark:bg-black/30 dark:text-zinc-100">
-{payloadText}
-              </pre>
             </section>
           ) : null}
-
-          {/* Info section removed for demo cleanliness */}
         </div>
       </main>
     </div>
