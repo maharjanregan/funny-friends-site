@@ -68,7 +68,7 @@ export default function InputPage() {
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white text-zinc-900 dark:from-black dark:to-zinc-950 dark:text-zinc-50">
       <header className="mx-auto max-w-4xl px-6 pt-10">
         <nav className="flex items-center justify-between">
-          <a href="/" className="font-semibold tracking-tight">
+          <a href="/quote-board" className="font-semibold tracking-tight">
             funny-friends
           </a>
           <div className="flex items-center gap-6 text-sm">
