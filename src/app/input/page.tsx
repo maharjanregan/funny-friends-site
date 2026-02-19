@@ -68,14 +68,14 @@ export default function InputPage() {
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white text-zinc-900 dark:from-black dark:to-zinc-950 dark:text-zinc-50">
       <header className="mx-auto max-w-4xl px-6 pt-10">
         <nav className="flex items-center justify-between">
-          <a href="/quote-board" className="font-semibold tracking-tight">
+          <a href="quote-board" className="font-semibold tracking-tight">
             funny-friends
           </a>
           <div className="flex items-center gap-6 text-sm">
-            <a className="hover:underline" href="/quote-board">
+            <a className="hover:underline" href="quote-board">
               Quote board
             </a>
-            <a className="hover:underline" href="/input">
+            <a className="hover:underline" href="input">
               Input
             </a>
           </div>
@@ -161,7 +161,7 @@ export default function InputPage() {
                 Submit
               </button>
               <a
-                href="/quote-board"
+                href="quote-board"
                 className="inline-flex h-11 items-center justify-center rounded-full border border-zinc-200 bg-white px-6 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-zinc-800 dark:bg-zinc-950"
               >
                 View quote board
