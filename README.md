@@ -1,6 +1,6 @@
 # funny-friends-site
 
-A small Next.js site for sharing funny friend moments: short posts, quotes, and inside jokes.
+A small Next.js site for sharing funny friend moments: short posts, quotes, inside jokes — plus a daily Quote Board.
 
 ## Tech
 

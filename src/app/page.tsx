@@ -82,6 +82,9 @@ export default function Home() {
             funny-friends
           </a>
           <div className="flex items-center gap-6 text-sm">
+            <a className="hover:underline" href="/quote-board">
+              Quote board
+            </a>
             <a className="hover:underline" href="#friends">
               Friends
             </a>

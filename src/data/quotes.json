@@ -1,0 +1,56 @@
+[
+  {
+    "id": "q1",
+    "text": "I’m not late, I’m just giving everyone time to miss me.",
+    "saidBy": "Rahul",
+    "tags": ["late", "confidence"]
+  },
+  {
+    "id": "q2",
+    "text": "Bro… hear me out.",
+    "saidBy": "Dristant",
+    "tags": ["bro", "chaos"]
+  },
+  {
+    "id": "q3",
+    "text": "That’s not a problem, that’s a feature.",
+    "saidBy": "Shreni",
+    "tags": ["developer", "cope"]
+  },
+  {
+    "id": "q4",
+    "text": "We can fix it in post.",
+    "saidBy": "Rahul",
+    "tags": ["editing", "cope"]
+  },
+  {
+    "id": "q5",
+    "text": "Trust the process (there is no process).",
+    "saidBy": "Dristant",
+    "tags": ["chaos"]
+  },
+  {
+    "id": "q6",
+    "text": "Say less. Actually say nothing.",
+    "saidBy": "Shreni",
+    "tags": ["one-liner"]
+  },
+  {
+    "id": "q7",
+    "text": "This is either genius or a lawsuit.",
+    "saidBy": "Rahul",
+    "tags": ["ideas"]
+  },
+  {
+    "id": "q8",
+    "text": "If it works once, it’s basically reliable.",
+    "saidBy": "Dristant",
+    "tags": ["engineering", "cope"]
+  },
+  {
+    "id": "q9",
+    "text": "I’m not judging, I’m just taking notes.",
+    "saidBy": "Shreni",
+    "tags": ["observant"]
+  }
+]
