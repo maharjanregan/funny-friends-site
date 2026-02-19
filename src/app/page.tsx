@@ -6,7 +6,7 @@ export default function Home() {
   useEffect(() => {
     // This site is meant to start on the Quote Board.
     // Use a relative path so this works under GitHub Pages basePath.
-    window.location.replace("quote-board");
+    window.location.replace("quote");
   }, []);
 
   return (
