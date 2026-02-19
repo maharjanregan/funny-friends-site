@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import quotesData from "@/data/quotes.json";
 import { todayKey as clientTodayKey, pickDailyTop3, type Quote } from "@/lib/quoteBoard";
-import { getSupabase } from "@/lib/supabaseClient";
+import { getSupabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 import { todayKey } from "@/lib/dailyKey";
 import type { QuoteSubmission } from "@/types/quoteSubmission";
 
@@ -96,9 +96,17 @@ export default function QuoteBoardPage() {
               {loading ? " — loading…" : ""}
             </p>
           </div>
-          <div className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-            <span className="text-zinc-500 dark:text-zinc-400">Date:</span>{" "}
-            <span className="font-mono">{key}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+              <span className="text-zinc-500 dark:text-zinc-400">Date:</span>{" "}
+              <span className="font-mono">{key}</span>
+            </div>
+            <div className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+              <span className="text-zinc-500 dark:text-zinc-400">Supabase:</span>{" "}
+              <span className="font-mono">
+                {isSupabaseConfigured() ? "configured" : "missing env"}
+              </span>
+            </div>
           </div>
         </div>
 

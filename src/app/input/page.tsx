@@ -61,7 +61,7 @@ export default function InputPage() {
       const supabase = getSupabase();
       if (!supabase) {
         setError(
-          "Supabase is not configured yet. Add NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_* key in your deploy environment.",
+          "Supabase is not configured yet (missing NEXT_PUBLIC_SUPABASE_URL / key in the deployed build).",
         );
         return;
       }
