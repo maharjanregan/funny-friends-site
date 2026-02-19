@@ -32,6 +32,19 @@ export default function InputPage() {
     e.preventDefault();
     setError(null);
 
+    const supabase = getSupabase();
+    if (!supabase) {
+      setError("Supabase isn’t ready yet. Try refreshing.");
+      return;
+    }
+
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData?.user) {
+      setError("Please login first.");
+      router.push("/login");
+      return;
+    }
+
     if (!text.trim() && !file) {
       setError("Add a rant or attach a meme.");
       return;
@@ -47,11 +60,7 @@ export default function InputPage() {
       return;
     }
 
-    const supabase = getSupabase();
-    if (!supabase) {
-      setError("Supabase isn’t ready yet. Try refreshing.");
-      return;
-    }
+    // supabase already initialized above
 
     setSaving(true);
     try {
