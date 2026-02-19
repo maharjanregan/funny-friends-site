@@ -13,6 +13,9 @@ export function isSupabaseConfigured() {
   return Boolean(SUPABASE_URL && SUPABASE_KEY);
 }
 
+export const buildSha = process.env.NEXT_PUBLIC_BUILD_SHA ?? "";
+
+
 export function getSupabase(): SupabaseClient | null {
   if (cached) return cached;
 

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import friendPins from "@/data/friendPins.json";
 import { todayKey } from "@/lib/dailyKey";
-import { getSupabase } from "@/lib/supabaseClient";
+import { buildSha, getSupabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 
 type FriendName = keyof typeof friendPins;
 
@@ -124,6 +124,16 @@ export default function InputPage() {
         </p>
 
         <div className="mt-8 grid gap-6">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+            <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+              Supabase: {isSupabaseConfigured() ? "configured" : "missing env"}
+            </span>
+            {buildSha ? (
+              <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 font-mono shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+                build: {buildSha.slice(0, 7)}
+              </span>
+            ) : null}
+          </div>
           <form
             onSubmit={onSubmit}
             className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
