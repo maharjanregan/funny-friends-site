@@ -4,8 +4,9 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Nav } from "@/components/Nav";
 import friendPins from "@/data/friendPins.json";
-import { todayKey } from "@/lib/dailyKey";
+// (dailyKey no longer used — realtime room)
 import { buildSha, getSupabase, isSupabaseConfigured } from "@/lib/supabaseClient";
+import type { MessageRow } from "@/types/message";
 
 type FriendName = keyof typeof friendPins;
 
@@ -23,6 +24,7 @@ export default function InputPage() {
   const [friend, setFriend] = useState<FriendName>(friends[0]);
   const [pin, setPin] = useState("");
   const [quote, setQuote] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -44,8 +46,8 @@ export default function InputPage() {
     setError(null);
     setCopied(false);
 
-    if (!quote.trim()) {
-      setError("Add a quote first.");
+    if (!quote.trim() && !file) {
+      setError("Add a rant or attach a meme.");
       return;
     }
 
@@ -69,14 +71,38 @@ export default function InputPage() {
         return;
       }
 
-      const dayKey = todayKey("America/Los_Angeles");
+      let image_url: string | null = null;
+
+      if (file) {
+        const ext = file.name.split(".").pop() || "png";
+        const path = `${Date.now()}-${Math.random().toString(16).slice(2)}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("memes")
+          .upload(path, file, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type || undefined,
+          });
+
+        if (uploadError) {
+          setError(uploadError.message);
+          return;
+        }
+
+        const { data } = supabase.storage.from("memes").getPublicUrl(path);
+        image_url = data.publicUrl;
+      }
+
+      const payload: Omit<MessageRow, "id" | "created_at"> = {
+        friend,
+        text: quote.trim() ? quote.trim() : null,
+        image_url,
+      };
+
       const { error: insertError } = await supabase
-        .from("quote_submissions")
-        .insert({
-          friend,
-          quote: quote.trim(),
-          day_key: dayKey,
-        });
+        .from("messages")
+        .insert(payload);
 
       if (insertError) {
         setError(insertError.message);
@@ -93,9 +119,10 @@ export default function InputPage() {
         // Ignore clipboard failures (some browsers block it).
       }
 
-      // Clear inputs + take them to the quote board (live page).
+      // Clear inputs + take them to the room.
       setPin("");
       setQuote("");
+      setFile(null);
 
       setTimeout(() => {
         router.push("/quote");
@@ -177,15 +204,33 @@ export default function InputPage() {
 
             <label className="mt-4 grid gap-2">
               <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                Quote
+                Rant
               </span>
               <textarea
                 value={quote}
                 onChange={(e) => setQuote(e.target.value)}
                 rows={4}
-                placeholder="Type the quote…"
+                placeholder="Type your rant…"
                 className="rounded-2xl border border-zinc-200 bg-white px-3 py-3 text-sm shadow-sm outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-black/40"
               />
+            </label>
+
+            <label className="mt-4 grid gap-2">
+              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Meme / picture (optional)
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                className="block w-full text-sm text-zinc-700 file:mr-4 file:rounded-full file:border-0 file:bg-zinc-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-zinc-800 dark:text-zinc-300 dark:file:bg-white dark:file:text-black dark:hover:file:bg-zinc-200"
+              />
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                Tip: keep images under ~2MB for fast uploads.
+              </p>
+            </label>
+
+            <label className="mt-4 grid gap-2">
             </label>
 
             {error ? (

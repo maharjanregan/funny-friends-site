@@ -8,7 +8,7 @@ export function Nav() {
       </Link>
       <div className="flex items-center gap-6 text-sm">
         <Link className="hover:underline" href="/quote">
-          Quote board
+          Room
         </Link>
         <Link className="hover:underline" href="/input">
           Rant
