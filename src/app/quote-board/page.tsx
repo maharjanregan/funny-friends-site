@@ -1,12 +1,71 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
 import quotesData from "@/data/quotes.json";
-import { pickDailyTop3, todayKey, type Quote } from "@/lib/quoteBoard";
+import { todayKey as clientTodayKey, pickDailyTop3, type Quote } from "@/lib/quoteBoard";
+import { getSupabase } from "@/lib/supabaseClient";
+import { todayKey } from "@/lib/dailyKey";
+import type { QuoteSubmission } from "@/types/quoteSubmission";
+
+type Mode = "supabase" | "fallback";
 
 export default function QuoteBoardPage() {
-  const quotes = quotesData as Quote[];
-  const key = todayKey("America/Los_Angeles");
-  const top3 = pickDailyTop3(quotes, key);
+  const [submissions, setSubmissions] = useState<QuoteSubmission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [mode, setMode] = useState<Mode>("supabase");
+
+  const fallbackQuotes = quotesData as Quote[];
+
+  const key = useMemo(() => clientTodayKey("America/Los_Angeles"), []);
+  const fallbackTop3 = useMemo(() => pickDailyTop3(fallbackQuotes, key), [fallbackQuotes, key]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      try {
+        const supabase = getSupabase();
+        if (!supabase) throw new Error("missing supabase config");
+
+        const dayKey = todayKey("America/Los_Angeles");
+        const { data, error } = await supabase
+          .from("quote_submissions")
+          .select("id, friend, quote, day_key, created_at")
+          .eq("day_key", dayKey)
+          .order("created_at", { ascending: true })
+          .limit(3);
+
+        if (error) throw error;
+        if (cancelled) return;
+
+        setSubmissions((data ?? []) as QuoteSubmission[]);
+        setMode("supabase");
+      } catch {
+        if (cancelled) return;
+        setMode("fallback");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const top3 =
+    mode === "supabase" && submissions.length
+      ? submissions.map((s, i) => ({
+          id: s.id ?? `s-${i}`,
+          text: s.quote,
+          saidBy: s.friend,
+          tags: ["today"],
+        }))
+      : fallbackTop3;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white text-zinc-900 dark:from-black dark:to-zinc-950 dark:text-zinc-50">
@@ -33,7 +92,8 @@ export default function QuoteBoardPage() {
               Quote board
             </h1>
             <p className="mt-2 text-zinc-600 dark:text-zinc-300">
-              Today’s top 3 (random, but consistent for the day)
+              Today’s top 3{mode === "supabase" ? " (live)" : " (random fallback)"}
+              {loading ? " — loading…" : ""}
             </p>
           </div>
           <div className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm shadow-sm dark:border-zinc-800 dark:bg-zinc-950">

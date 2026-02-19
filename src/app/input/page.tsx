@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import friendPins from "@/data/friendPins.json";
+import { todayKey } from "@/lib/dailyKey";
+import { getSupabase } from "@/lib/supabaseClient";
 
 type FriendName = keyof typeof friendPins;
 
@@ -21,6 +23,7 @@ export default function InputPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const payload = useMemo(() => {
     const now = new Date();
@@ -53,14 +56,41 @@ export default function InputPage() {
       return;
     }
 
-    setSubmitted(true);
-
-    // Nice demo behavior: copy JSON automatically on success.
+    setSaving(true);
     try {
-      await copyToClipboard(payloadText);
-      setCopied(true);
-    } catch {
-      // Ignore clipboard failures (some browsers block it).
+      const supabase = getSupabase();
+      if (!supabase) {
+        setError(
+          "Supabase is not configured yet. Add NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_* key in your deploy environment.",
+        );
+        return;
+      }
+
+      const dayKey = todayKey("America/Los_Angeles");
+      const { error: insertError } = await supabase
+        .from("quote_submissions")
+        .insert({
+          friend,
+          quote: quote.trim(),
+          day_key: dayKey,
+        });
+
+      if (insertError) {
+        setError(insertError.message);
+        return;
+      }
+
+      setSubmitted(true);
+
+      // Nice demo behavior: copy JSON automatically on success.
+      try {
+        await copyToClipboard(payloadText);
+        setCopied(true);
+      } catch {
+        // Ignore clipboard failures (some browsers block it).
+      }
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -156,9 +186,9 @@ export default function InputPage() {
               <button
                 type="submit"
                 className="inline-flex h-11 items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-                disabled={!quote.trim() || pin.trim().length !== 4}
+                disabled={saving || !quote.trim() || pin.trim().length !== 4}
               >
-                Submit
+                {saving ? "Saving…" : "Submit"}
               </button>
               <a
                 href="quote-board"
@@ -173,12 +203,11 @@ export default function InputPage() {
             <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-emerald-900 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-100">
               <h2 className="text-lg font-semibold">Submitted</h2>
               <p className="mt-2 text-sm opacity-90">
-                Demo mode: this site is hosted on GitHub Pages (static), so it can’t
-                auto-publish to the shared site without a backend.
+                Your quote was saved. It should show up on the quote board for
+                everyone within a moment.
               </p>
               <p className="mt-2 text-sm opacity-90">
-                We copied your submission JSON {copied ? "to clipboard" : "below"}. Send it
-                to Regan to publish.
+                (We still show/copy the JSON payload for debugging/demo.)
               </p>
 
               <div className="mt-4 flex flex-wrap items-center gap-3">
