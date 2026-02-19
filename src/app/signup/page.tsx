@@ -15,11 +15,13 @@ export default function SignupPage() {
   const [inviteCode, setInviteCode] = useState("");
 
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function onSignup(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setStatus(null);
 
     const supabase = getSupabase();
     if (!supabase) {
@@ -59,7 +61,7 @@ export default function SignupPage() {
         return;
       }
 
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password,
       });
@@ -83,6 +85,15 @@ export default function SignupPage() {
         },
       );
 
+      // If email confirmations are ON, session may be null.
+      if (!signUpData.session) {
+        setStatus(
+          "Signup successful. Check your email to confirm, then come back and login.",
+        );
+        return;
+      }
+
+      setStatus("Signup successful. Redirecting to the Room…");
       router.replace("/quote");
     } finally {
       setLoading(false);
@@ -156,6 +167,11 @@ export default function SignupPage() {
 
           {error ? (
             <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>
+          ) : null}
+          {status ? (
+            <p className="mt-3 text-sm text-emerald-700 dark:text-emerald-300">
+              {status}
+            </p>
           ) : null}
 
           <div className="mt-5">
