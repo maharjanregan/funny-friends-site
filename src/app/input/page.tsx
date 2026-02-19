@@ -34,7 +34,7 @@ export default function InputPage() {
 
     const supabase = getSupabase();
     if (!supabase) {
-      setError("Supabase isn’t ready yet. Try refreshing.");
+      setError("Supabase isn\u2019t ready yet. Try refreshing.");
       return;
     }
 
