@@ -85,6 +85,9 @@ export default function Home() {
             <a className="hover:underline" href="/quote-board">
               Quote board
             </a>
+            <a className="hover:underline" href="/input">
+              Input
+            </a>
             <a className="hover:underline" href="#friends">
               Friends
             </a>
