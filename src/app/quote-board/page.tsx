@@ -141,7 +141,12 @@ export default function QuoteBoardPage() {
           ))}
         </section>
 
-        <section className="mt-10 rounded-3xl border border-dashed border-zinc-300 bg-white/60 p-6 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-black/20 dark:text-zinc-300">
+        <section className="mt-10 rounded-3xl border border-zinc-200 bg-white p-6 text-sm text-zinc-700 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+          <p className="font-medium">Buddies</p>
+          <p className="mt-2 opacity-90">Rahul · Dristant · Shreni · Regan</p>
+        </section>
+
+        <section className="mt-6 rounded-3xl border border-dashed border-zinc-300 bg-white/60 p-6 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-black/20 dark:text-zinc-300">
           <p className="font-medium">How it works</p>
           <ul className="mt-2 list-disc space-y-1 pl-5">
             <li>

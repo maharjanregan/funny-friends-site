@@ -119,6 +119,9 @@ export default function InputPage() {
         <p className="mt-2 text-zinc-600 dark:text-zinc-300">
           Pick your name, enter your 4-digit PIN, and drop your quote.
         </p>
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          Buddies: Rahul · Dristant · Shreni · Regan
+        </p>
 
         <div className="mt-8 grid gap-6">
           <form

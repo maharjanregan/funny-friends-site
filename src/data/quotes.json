@@ -52,5 +52,23 @@
     "text": "I’m not judging, I’m just taking notes.",
     "saidBy": "Shreni",
     "tags": ["observant"]
+  },
+  {
+    "id": "q10",
+    "text": "If it’s dumb but it works, we can call it a prototype.",
+    "saidBy": "Regan",
+    "tags": ["prototype", "cope"]
+  },
+  {
+    "id": "q11",
+    "text": "Okay—two minutes. (45 minutes later…)",
+    "saidBy": "Regan",
+    "tags": ["time", "relatable"]
+  },
+  {
+    "id": "q12",
+    "text": "We’re not lost, we’re just exploring alternate routes.",
+    "saidBy": "Regan",
+    "tags": ["travel", "cope"]
   }
 ]
