@@ -113,10 +113,10 @@ export default function InputPage() {
 
       <main className="mx-auto max-w-4xl px-6 pb-20 pt-12">
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          Input a quote
+          Rant here
         </h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-300">
-          Pick your name, enter your 4-digit PIN, and drop your quote.
+          Pick your name, enter your 4-digit PIN, and rant.
         </p>
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
           Buddies: Rahul · Dristant · Shreni · Regan
@@ -206,7 +206,7 @@ export default function InputPage() {
                 href="/quote"
                 className="inline-flex h-11 items-center justify-center rounded-full border border-zinc-200 bg-white px-6 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow dark:border-zinc-800 dark:bg-zinc-950"
               >
-                View quote board
+                View quote board →
               </a>
             </div>
           </form>
@@ -237,7 +237,7 @@ export default function InputPage() {
                   href="/quote"
                   className="inline-flex h-10 items-center justify-center rounded-full border border-emerald-300 bg-white/70 px-5 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow"
                 >
-                  Go to quote board
+                  Go to quote board →
                 </a>
               </div>
 

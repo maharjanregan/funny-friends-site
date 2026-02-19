@@ -11,7 +11,7 @@ export function Nav() {
           Quote board
         </Link>
         <Link className="hover:underline" href="/input">
-          Input
+          Rant
         </Link>
       </div>
     </nav>
