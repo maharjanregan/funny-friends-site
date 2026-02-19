@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Nav } from "@/components/Nav";
 import { ForgotPin } from "@/components/ForgotPin";
+import { PostComposer } from "@/components/PostComposer";
 import friendPins from "@/data/friendPins.json";
 import quotesData from "@/data/quotes.json";
 import { todayKey as clientTodayKey, pickDailyTop3, type Quote } from "@/lib/quoteBoard";
@@ -262,6 +263,10 @@ export default function QuoteBoardPage() {
 
         <section className="mt-6">
           <ForgotPin />
+        </section>
+
+        <section className="mt-6">
+          <PostComposer onPosted={() => {}} />
         </section>
 
         {/* Summary + leaderboard */}
