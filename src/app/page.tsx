@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 
 export default function Home() {
   useEffect(() => {
@@ -18,9 +19,9 @@ export default function Home() {
         </p>
         <p className="mt-4 text-sm">
           If you’re not redirected, go to{" "}
-          <a className="underline" href="/quote-board">
+          <Link className="underline" href="/quote-board">
             /quote-board
-          </a>
+          </Link>
           .
         </p>
       </main>
